@@ -2,8 +2,7 @@ package ru.spbstu.competition
 
 import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.Option
-import ru.spbstu.competition.game.Intellect
-import ru.spbstu.competition.game.State
+import ru.spbstu.competition.game.Graph
 import ru.spbstu.competition.protocol.Protocol
 import ru.spbstu.competition.protocol.data.*
 
@@ -21,20 +20,15 @@ object Arguments {
 fun main(args: Array<String>) {
     Arguments.use(args)
 
-    println("Hi, I am Average Joe, the ultimate punter!")
+    println("Couple of seeds...")
 
-    // Протокол обмена с сервером
     val protocol = Protocol(Arguments.url, Arguments.port)
-    // Состояние игрового поля
-    val gameState = State()
-    // Джо очень умный чувак, вот его ум
-    val intellect = Intellect(gameState, protocol)
 
-    protocol.handShake("Average Joe, yo!")
+    protocol.handShake("I wanna grow here")
     val setupData = protocol.setup()
-    gameState.init(setupData)
+    val graph = Graph(setupData)
 
-    println("Received id = ${setupData.punter}")
+    println("Twiner is planted. (id: ${setupData.punter})")
 
     protocol.ready()
 
@@ -42,26 +36,28 @@ fun main(args: Array<String>) {
         val message = protocol.serverMessage()
         when(message) {
             is GameResult -> {
-                println("The game is over!")
+                println("Twiner has grown.")
                 val myScore = message.stop.scores[protocol.myId]
-                println("Joe scored ${myScore.score} points!")
+                println("points: ${myScore.score}")
                 break@gameloop
             }
             is Timeout -> {
-                println("Joe too slow =(")
+                println("Twiner growing too slow :(")
             }
             is GameTurnMessage -> {
-                for(move in message.move.moves) {
-                    when(move) {
-                        is PassMove -> {}
-                        is ClaimMove -> gameState.update(move.claim)
-                    }
-                }
+                for(move in message.move.moves)
+                    if(move is ClaimMove) graph.update(move.claim)
             }
         }
 
-        println("Joe thinkin'")
-        intellect.makeMove()
-        println("Joe genius!")
+        val targetNode = graph.getNextNode()
+        if(targetNode == null) {
+            protocol.passMove()
+            println("Twiner has slowed its growth")
+        }
+        else {
+            protocol.claimMove(graph.getCurrentNode().id, targetNode.id)
+            println("Twiner become bigger")
+        }
     }
 }
