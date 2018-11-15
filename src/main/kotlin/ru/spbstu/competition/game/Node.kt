@@ -1,9 +1,9 @@
 package ru.spbstu.competition.game
 
-enum class NodeStates { GREENSPOON, ENEMY, NEUTRAL}
+enum class NodeStates { TWINER, ENEMY, NEUTRAL}
 
 class Node(val id : Int) {
-    var calculationNum : Int? = null
+    var session = 0
     var prev : Node? = null
     var distance = 0
     var state = NodeStates.NEUTRAL
@@ -13,10 +13,19 @@ class Node(val id : Int) {
 
     fun isNeutral() = this.state == NodeStates.NEUTRAL
 
+    fun isTwiners() = this.state == NodeStates.TWINER
+
+    fun changedAtSession(session : Int) = this.session == session
+
+    fun resetInfo() {
+        this.prev = null
+        this.distance = Int.MAX_VALUE
+    }
+
     fun updateInfo(calculationNum : Int, distance : Int, prev : Node) : Boolean {
-        if((this.calculationNum != calculationNum || this.distance > distance)
+        if((this.session != calculationNum || this.distance > distance)
                 && !this.isBlocked()) {
-            this.calculationNum = calculationNum
+            this.session = calculationNum
             this.distance = distance
             this.prev = prev
             return true

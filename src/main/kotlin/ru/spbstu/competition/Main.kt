@@ -8,10 +8,10 @@ import ru.spbstu.competition.protocol.data.*
 
 object Arguments {
     @Option(name = "-u", usage = "Specify server url")
-    var url: String = ""
+    var url: String = "kotoed.icc.spbstu.ru"
 
     @Option(name = "-p", usage = "Specify server port")
-    var port: Int = -1
+    var port: Int = 50001
 
     fun use(args: Array<String>): Arguments =
             CmdLineParser(this).parseArgument(*args).let{ this }
@@ -23,16 +23,20 @@ fun main(args: Array<String>) {
     println("Couple of seeds...")
 
     val protocol = Protocol(Arguments.url, Arguments.port)
+    println("\t- protocol")
 
-    protocol.handShake("I wanna grow here")
+    protocol.handShake("a nu ka sigraem blin!") //I wanna grow here
+    println("\t- handshake")
     val setupData = protocol.setup()
     val graph = Graph(setupData)
 
-    println("Twiner is planted. (id: ${setupData.punter})")
+    println("Twiner is planted. (id: ${setupData.punter})\n\n")
 
     protocol.ready()
 
+    var moveNum = 0
     gameloop@ while(true) {
+        moveNum++
         val message = protocol.serverMessage()
         when(message) {
             is GameResult -> {
@@ -53,11 +57,12 @@ fun main(args: Array<String>) {
         val targetNode = graph.getNextNode()
         if(targetNode == null) {
             protocol.passMove()
-            println("Twiner has slowed its growth")
+            println("pass")
         }
         else {
+            println("$moveNum) ${graph.getCurrentNode().id} -> ${targetNode.id} (${graph.getMethodNum()})" +
+                    " isNeighbour=${graph.getCurrentNode().links.contains(targetNode)} state=${targetNode.state}")
             protocol.claimMove(graph.getCurrentNode().id, targetNode.id)
-            println("Twiner become bigger")
         }
     }
 }

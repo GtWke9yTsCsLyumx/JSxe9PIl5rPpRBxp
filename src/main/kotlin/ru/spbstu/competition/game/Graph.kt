@@ -5,17 +5,20 @@ import ru.spbstu.competition.protocol.data.Setup
 import java.util.*
 
 class Graph(setup : Setup) {
-    private val geenspoonId = setup.punter
+    private val twinerId = setup.punter
     private val nodes = linkedMapOf<Int, Node>()
     private val mines = linkedSetOf<Node>()
     private val untappedMines = linkedSetOf<Node>()
     private val fullyCapturedMines = linkedSetOf<Node>()
-    private var lastCalculation = 0
+    private var lastSession = 0
     private var lastEnemyNode : Node? = null
     private var currentNode : Node
     private var allDistantNeighborsCaptured = false
+    private var moveNum = 1
+    private var methodNum = 0
 
     init {
+        println("Graph building")
         // построение графа (добавление узлов и их связей)
         var n1 : Int
         var n2 : Int
@@ -34,19 +37,29 @@ class Graph(setup : Setup) {
             untappedMines.add(nodes[mine]!!)
         }
 
-        // установка исходной точки пути
-        currentNode = mines.last()
+        // установка отправной точки
+        this.currentNode = mines.last()
+
+        // удаление отправной точки из списка "нетронутых" майнеров
+        untappedMines.remove(this.currentNode)
+
+        println("\tcomplete!")
     }
 
     fun getCurrentNode() = currentNode
+    fun getMethodNum() = methodNum
 
     // обновление состояний узлов графа после хода
     fun update(claim : Claim) {
         val n1 = claim.source
         val n2 = claim.target
         val newState : NodeStates
-        if(claim.punter == geenspoonId) {
-            newState = NodeStates.GREENSPOON
+        if(claim.punter == twinerId) {
+            newState = NodeStates.TWINER
+//            println("\t${this.moveNum}) ${this.currentNode.id} -> ${nodes[n2]!!.id} (${this.methodNum})") // !!!
+            println("\tresult:  ${this.currentNode.id} -> ${nodes[n2]!!.id}")
+            this.currentNode = nodes[n2]!! // !!!
+            this.moveNum++
             lastEnemyNode = null
         }
         else {
@@ -57,12 +70,18 @@ class Graph(setup : Setup) {
         if(!mines.contains(nodes[n2])) nodes[n2]?.state = newState
     }
 
+    // очистка просчитанных путей
+    private fun resetDistances() {
+        nodes.values.forEach { it.resetInfo() }
+    }
+
     // вычисление расстояний от текущей точки до всех точек графа
     // записывает информацию на узлы графа
     // (алгоритм Дейкстры)
     private fun calculateDistances()  {
-        val calculationNum = lastCalculation + 1
-        val queue = PriorityQueue<Node>()
+        resetDistances() // !!!
+        val calculationNum = lastSession + 1
+        val queue = LinkedList<Node>()
         this.currentNode.distance = 0
         var currentNode = this.currentNode
         queue.add(currentNode)
@@ -76,7 +95,7 @@ class Graph(setup : Setup) {
                 }
             }
         }
-        lastCalculation = calculationNum
+        lastSession = calculationNum
     }
 
     // получение узла для следующего хода
@@ -91,45 +110,76 @@ class Graph(setup : Setup) {
     }
 
     // получение следующего узла кратчайшего пути до ближайщего майнера
-    private fun getNextNode1() : Node {
+    private fun getNextNode1() : Node? {
+        // маркер метода
+        this.methodNum = 1
 
         // Дейкстра
         this.calculateDistances()
 
+        // в случае отсутствия нетронутых майнеров
+        // (возможно, если метод был вызван в результате рекурсии)
+        // происходит выполнение второго варианта поиска хода
+        if(untappedMines.isEmpty()) return getNextNode2()
+
         // определение ближайшего майнера
-        var nearestMine = untappedMines.first()
+        var nearestMine = mines.first()
         for (mine in untappedMines)
             if (mine.distance < nearestMine.distance)
                 nearestMine = mine
 
-        // "развертываение" пути до узла, следующего после текущего
-        var currentNode = this.currentNode
-        while (currentNode.prev!! != this.currentNode)
+        // если ближайший майнер является недосягаемым (невозможно добраться),
+        // переход на него и повтор расчетов относительно него
+        if(nearestMine.changedAtSession(lastSession)) {
+            this.currentNode = nearestMine
+            untappedMines.remove(this.currentNode)
+            println("JUMP! num of untapped: ${untappedMines.size}")
+            return getNextNode1()
+        }
+
+        // "развертываение" пути от ближ. майнера до первого захваченного узла,
+        // либо до узла, следующего за текущим
+        var currentNode = nearestMine
+        println("begin while")
+        while (currentNode.prev!! != this.currentNode &&
+                !currentNode.prev!!.isTwiners())
             currentNode = currentNode.prev!!
+        println("end while")
+
+        // если за узлом, на котором остановилась развертка, следует не текущий узел,
+        // то "переход" на него (изменение текущего узла)
+        if(currentNode.prev != this.currentNode)
+            this.currentNode = currentNode.prev!!
 
         // удаление майнера из списка "нетронутых" (если это майнер)
         untappedMines.remove(currentNode.prev!!)
 
         // возврат узла для для хода
-        return currentNode.prev!!
+        return currentNode
     }
 
 
     // если все майнеры были захвачены, но не были "захвачены полностью"
     // получение соседнего узла одного из майнеров
     // тактика: захват всех соседних узлов каждого майнера
-    private fun getNextNode2() : Node {
+    private fun getNextNode2() : Node? {
+        // маркер метода
+        this.methodNum = 2
+
         for (mine in mines) {
             for (neighbour in mine.links)
                 if (neighbour.isNeutral()) return neighbour
             fullyCapturedMines.add(mine)
         }
-
+        return null
     }
 
     // получение "дальнего соседа" майнера (сосед соседа)
-    // если все "дальние соседи" захвачены
+    // если все "соседи" захвачены
     private fun getNextNode3() : Node? {
+        // маркер метода
+        this.methodNum = 3
+
         if(!allDistantNeighborsCaptured) {
             for (neighbour in mines)
                 for (distantNeighbor in neighbour.links)
