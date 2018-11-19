@@ -3,6 +3,7 @@ package ru.spbstu.competition
 import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.Option
 import ru.spbstu.competition.game.Graph
+import ru.spbstu.competition.game.NodeStates
 import ru.spbstu.competition.protocol.Protocol
 import ru.spbstu.competition.protocol.data.*
 
@@ -11,7 +12,7 @@ object Arguments {
     var url: String = "kotoed.icc.spbstu.ru"
 
     @Option(name = "-p", usage = "Specify server port")
-    var port: Int = 50001
+    var port: Int = 50007
 
     fun use(args: Array<String>): Arguments =
             CmdLineParser(this).parseArgument(*args).let{ this }
@@ -23,10 +24,9 @@ fun main(args: Array<String>) {
     println("Couple of seeds...")
 
     val protocol = Protocol(Arguments.url, Arguments.port)
-    println("\t- protocol")
 
     protocol.handShake("a nu ka sigraem blin!") //I wanna grow here
-    println("\t- handshake")
+    println("\t- waiting for players...")
     val setupData = protocol.setup()
     val graph = Graph(setupData)
 
@@ -40,13 +40,13 @@ fun main(args: Array<String>) {
         val message = protocol.serverMessage()
         when(message) {
             is GameResult -> {
-                println("Twiner has grown.")
+                println("\ttwiner has grown")
                 val myScore = message.stop.scores[protocol.myId]
-                println("points: ${myScore.score}")
+                println("\tpoints: ${myScore.score}")
                 break@gameloop
             }
             is Timeout -> {
-                println("Twiner growing too slow :(")
+                println("\ttwiner growing too slow :(")
             }
             is GameTurnMessage -> {
                 for(move in message.move.moves)
@@ -54,14 +54,16 @@ fun main(args: Array<String>) {
             }
         }
 
+        println("MOVE $moveNum")
         val targetNode = graph.getNextNode()
         if(targetNode == null) {
             protocol.passMove()
-            println("pass")
+            println("\tpass")
         }
         else {
-            println("$moveNum) ${graph.getCurrentNode().id} -> ${targetNode.id} (${graph.getMethodNum()})" +
-                    " isNeighbour=${graph.getCurrentNode().links.contains(targetNode)} state=${targetNode.state}")
+            println("\ttry: ${graph.getCurrentNode().id} -> ${targetNode.id} (${graph.getMethodNum()})" +
+                    " (neighbour=${graph.getCurrentNode().links.contains(targetNode)}" +
+                    "neutral=${targetNode.state == NodeStates.NEUTRAL} miner=${graph.nodeIsMiner(targetNode)})")
             protocol.claimMove(graph.getCurrentNode().id, targetNode.id)
         }
     }

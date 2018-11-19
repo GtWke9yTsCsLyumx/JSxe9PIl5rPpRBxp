@@ -49,6 +49,8 @@ class Graph(setup : Setup) {
     fun getCurrentNode() = currentNode
     fun getMethodNum() = methodNum
 
+    fun nodeIsMiner(node : Node) = mines.contains(node)
+
     // обновление состояний узлов графа после хода
     fun update(claim : Claim) {
         val n1 = claim.source
@@ -123,28 +125,33 @@ class Graph(setup : Setup) {
         if(untappedMines.isEmpty()) return getNextNode2()
 
         // определение ближайшего майнера
-        var nearestMine = mines.first()
-        for (mine in untappedMines)
-            if (mine.distance < nearestMine.distance)
+        var nearestMine = Node(Int.MAX_VALUE) // фиктивный "дальнейший" узел
+        nearestMine.distance = Int.MAX_VALUE // (максимальная дистанция)
+        for (mine in untappedMines) {
+            // если расстояние до данного майнера было найдено во время
+            // последней сессии и это расстояние короче...
+            if (mine.changedAtSession(lastSession) &&
+                    mine.distance < nearestMine.distance)
                 nearestMine = mine
+        }
 
-        // если ближайший майнер является недосягаемым (невозможно добраться),
-        // переход на него и повтор расчетов относительно него
-        if(nearestMine.changedAtSession(lastSession)) {
-            this.currentNode = nearestMine
-            untappedMines.remove(this.currentNode)
-            println("JUMP! num of untapped: ${untappedMines.size}")
-            return getNextNode1()
+        // если нет майнеров, до которых можно добраться
+        // из текущий точки
+        if(nearestMine.id == Int.MAX_VALUE) { // (фективный узел в результате)
+            this.currentNode = nearestMine // "прыжок" к следующему нетронутому майнеру
+            untappedMines.remove(this.currentNode) // удаление майнера его их списка нетронутых
+            println("\tjump on ${untappedMines.size}")
+            return getNextNode1() // повторный вызов метода
         }
 
         // "развертываение" пути от ближ. майнера до первого захваченного узла,
         // либо до узла, следующего за текущим
         var currentNode = nearestMine
-        println("begin while")
+//        println("begin while")
         while (currentNode.prev!! != this.currentNode &&
                 !currentNode.prev!!.isTwiners())
             currentNode = currentNode.prev!!
-        println("end while")
+//        println("end while")
 
         // если за узлом, на котором остановилась развертка, следует не текущий узел,
         // то "переход" на него (изменение текущего узла)
