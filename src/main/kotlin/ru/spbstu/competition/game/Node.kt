@@ -33,3 +33,5 @@ class Node(val id : Int) {
         return false
     }
 }
+
+data class NodePair(val source : Node, val target : Node)

@@ -5,8 +5,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/Arguments.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/Arguments.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/Graph.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/Graph.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,7 +19,8 @@
     <session id="820314925">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="15" />
+          <entry key="project.closed" value="18" />
+          <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.2" value="2" />
           <entry key="project.open.time.23" value="1" />
           <entry key="project.open.time.26" value="1" />
@@ -27,11 +28,11 @@
           <entry key="project.open.time.28" value="1" />
           <entry key="project.open.time.3" value="2" />
           <entry key="project.open.time.31" value="2" />
-          <entry key="project.open.time.32" value="1" />
+          <entry key="project.open.time.32" value="2" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="16" />
+          <entry key="project.opened" value="18" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -48,23 +49,23 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="kt" value="10312" />
+          <entry key="kt" value="20683" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Kotlin" value="10312" />
+          <entry key="Kotlin" value="20683" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="61">
-              <caret line="14" column="25" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+            <state relative-caret-position="179">
+              <caret line="27" column="23" lean-forward="true" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -90,19 +91,19 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+            <state relative-caret-position="408">
+              <caret line="29" column="28" lean-forward="true" selection-start-line="29" selection-start-column="28" selection-end-line="29" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="419">
-              <caret line="51" column="12" selection-start-line="51" selection-start-column="12" selection-end-line="51" selection-end-column="12" />
+            <state relative-caret-position="280">
+              <caret line="113" column="29" selection-start-line="113" selection-start-column="29" selection-end-line="113" selection-end-column="29" />
               <folding>
-                <element signature="e#36#152#0" expanded="true" />
+                <element signature="e#36#192#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -112,9 +113,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>entries</find>
-      <find>x</find>
-      <find>protocol</find>
       <find>id</find>
       <find>Site</find>
       <find>calculateDistances</find>
@@ -123,8 +121,28 @@
       <find>result</find>
       <find>begin while</find>
       <find>jump</find>
-      <find>update</find>
       <find>begin</find>
+      <find>mines.contains</find>
+      <find>detached</find>
+      <find>nearest</find>
+      <find>detachedMines</find>
+      <find>targetNode</find>
+      <find>getNextNode3() :</find>
+      <find>повторный</find>
+      <find>повтор</find>
+      <find>repeat</find>
+      <find>waiting for players</find>
+      <find>Graph building...</find>
+      <find>fun getNextNode3</find>
+      <find>neutral</find>
+      <find>there's no miners can be connected with this</find>
+      <find>farthestNode</find>
+      <find>60</find>
+      <find>434</find>
+      <find>path</find>
+      <find>MOVE 76</find>
+      <find>update</find>
+      <find>original</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -139,8 +157,8 @@
         <option value="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/PathBuilder.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Intellect.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt" />
-        <option value="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt" />
+        <option value="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt" />
       </list>
     </option>
   </component>
@@ -161,10 +179,10 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="268" />
-    <option name="y" value="30" />
-    <option name="width" value="984" />
-    <option name="height" value="565" />
+    <option name="x" value="189" />
+    <option name="y" value="136" />
+    <option name="width" value="974" />
+    <option name="height" value="568" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -174,6 +192,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
@@ -184,44 +204,34 @@
             <path>
               <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="target" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
               <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="target" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="classes" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
               <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="kotlin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="kotlin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="target" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="classes" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="ru" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
               <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="kotlin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="target" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="classes" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="ru" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="spbstu" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
               <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="kotlin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="target" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="classes" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="ru" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="spbstu" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="competition" type="9f88c78c:ScopeViewTreeModel$FileNode" />
@@ -229,9 +239,8 @@
             <path>
               <item name="JSxe9PIl5rPpRBxp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
               <item name="JSxe9PIl5rPpRBxp" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="kotlin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="target" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="classes" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="ru" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="spbstu" type="9f88c78c:ScopeViewTreeModel$FileNode" />
               <item name="competition" type="9f88c78c:ScopeViewTreeModel$FileNode" />
@@ -241,13 +250,11 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1542653167540" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1542740203995" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
@@ -298,9 +305,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="30" width="1366" height="738" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14166667" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15227273" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -308,7 +314,7 @@
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.61513156" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.37993422" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -369,25 +375,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="51" column="12" selection-start-line="51" selection-start-column="12" selection-end-line="51" selection-end-column="12" />
-          <folding>
-            <element signature="e#36#152#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="408">
+          <caret line="29" column="28" lean-forward="true" selection-start-line="29" selection-start-column="28" selection-end-line="29" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="61">
-          <caret line="14" column="25" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+        <state relative-caret-position="179">
+          <caret line="27" column="23" lean-forward="true" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="113" column="29" selection-start-line="113" selection-start-column="29" selection-end-line="113" selection-end-column="29" />
+          <folding>
+            <element signature="e#36#192#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

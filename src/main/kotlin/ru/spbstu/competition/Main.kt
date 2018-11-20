@@ -12,7 +12,7 @@ object Arguments {
     var url: String = "kotoed.icc.spbstu.ru"
 
     @Option(name = "-p", usage = "Specify server port")
-    var port: Int = 50007
+    var port: Int = 50005
 
     fun use(args: Array<String>): Arguments =
             CmdLineParser(this).parseArgument(*args).let{ this }
@@ -25,8 +25,8 @@ fun main(args: Array<String>) {
 
     val protocol = Protocol(Arguments.url, Arguments.port)
 
-    protocol.handShake("a nu ka sigraem blin!") //I wanna grow here
-    println("\t- waiting for players...")
+    protocol.handShake("botbotbotbot") //I wanna grow here
+    println("\twaiting for players")
     val setupData = protocol.setup()
     val graph = Graph(setupData)
 
@@ -55,16 +55,21 @@ fun main(args: Array<String>) {
         }
 
         println("MOVE $moveNum")
-        val targetNode = graph.getNextNode()
-        if(targetNode == null) {
+        var movePair = graph.getTrick() // попытка насолить басурманам
+        if(movePair == null) // если все-таки придется сыграть честно
+            movePair = graph.getNextNode() // непорочное получение след. хода
+
+        // если ход не найден
+        if(movePair == null) {
             protocol.passMove()
-            println("\tpass")
+            println("\ttwiner can't find a way to grow")
         }
         else {
-            println("\ttry: ${graph.getCurrentNode().id} -> ${targetNode.id} (${graph.getMethodNum()})" +
-                    " (neighbour=${graph.getCurrentNode().links.contains(targetNode)}" +
-                    "neutral=${targetNode.state == NodeStates.NEUTRAL} miner=${graph.nodeIsMiner(targetNode)})")
-            protocol.claimMove(graph.getCurrentNode().id, targetNode.id)
+            println("\ttry: ${movePair.source.id} -> ${movePair.target.id} (${graph.getMethodNum()})" +
+                    " (neighbour=${movePair.source.links.contains(movePair.target)}" +
+                    " neutral=${movePair.target.state == NodeStates.NEUTRAL} miner=${graph.nodeIsMiner(movePair.target)})")
+            protocol.claimMove(movePair.source.id, movePair.target.id)
+            graph.saveLastMove(movePair)
         }
     }
 }
