@@ -3,25 +3,25 @@ package ru.spbstu.competition.game
 import ru.spbstu.competition.protocol.data.Claim
 import ru.spbstu.competition.protocol.data.Setup
 import java.util.*
-import kotlin.collections.LinkedHashSet
 
 class Graph(setup : Setup) {
     private val twinerId = setup.punter
     private val nodes = linkedMapOf<Int, Node>()
     private val mines = linkedSetOf<Node>()
-    private val neutralMines : LinkedHashSet<Node>
-    private val detachedMines = linkedSetOf<Node>()
-    private val capturedMines = linkedSetOf<Node>()
+    private val unlinkedMines = linkedSetOf<Node>()
     private val unrealisedMines = linkedSetOf<Node>()
+    private val twinerPairs = hashSetOf<NodePair>()
+    private val reachedNodesList = linkedSetOf<Node>()
+    private var stage3IsStarted = false
     private var lastMove = NodePair(Node(-1), Node(-2))
     private var lastSession = 0
-    private var lastEnemyNode : Node? = null
     private var moveNum = 1
     private var methodNum = 0
+    private var enemyLogs = mutableListOf<String>()
 
     init {
         println("\tgraph building")
-        // построение графа (добавление узлов и их связей)
+        // graph building
         var n1 : Int
         var n2 : Int
 
@@ -35,37 +35,15 @@ class Graph(setup : Setup) {
             nodes[n2]!!.links.add(nodes[n1]!!)
         }
 
-        println("\t\tcreating ordered list of mines")
-        // запись узлов-майнеров в буферный список,
-        // запись в такой же буфер максимальных дистанций от них
-        var mineBuf : Node
-        val minesBuf = mutableListOf<Node>()
-        val minesMaxDistances = mutableListOf<Int>()
+        // creating mines lists
+        println("\t\tcreating list of mines")
         for(mineId in setup.map.mines) {
-            mineBuf = nodes[mineId]!! // получение узла-майнера по id
-            minesBuf.add(mineBuf) // запись майнера в буфер
-            minesMaxDistances.add(furthestNodeFrom(mineBuf)!!.distance) // запись максимальной дистанции от майнера
+            mines.add(nodes[mineId]!!)
+            unlinkedMines.add(nodes[mineId]!!)
+            unrealisedMines.add(nodes[mineId]!!)
         }
 
-        // формирование списка майнеров, отсортированного
-        // по расстояниям до дальнейших точек
-        var maxDistance : Int
-        var maxDistanceIndex = Int.MIN_VALUE
-        while(minesBuf.isNotEmpty()) {
-            maxDistance = Int.MIN_VALUE
-            for(i in 0 until minesBuf.size) {
-                if(minesMaxDistances[i] > maxDistance) {
-                    maxDistance = minesMaxDistances[i]
-                    maxDistanceIndex = i
-                }
-            }
-            mines.add(minesBuf[maxDistanceIndex])
-            minesBuf.removeAt(maxDistanceIndex)
-            minesMaxDistances.removeAt(maxDistanceIndex)
-        }
-
-        // инициализация списка свободных майнеров (незахваченных)
-        neutralMines = mines
+        println("*** ${unlinkedMines === mines}, ${unrealisedMines === mines} ***")
 
         println("\t\tgraph building completed!")
         println("\t\t\tnodes: ${nodes.size}\n\t\t\tmines: ${mines.size}")
@@ -80,273 +58,278 @@ class Graph(setup : Setup) {
 
     fun getMethodNum() = methodNum
 
-    fun nodeIsMiner(node : Node) = mines.contains(node)
+    fun nodeIsMine(node : Node) = mines.contains(node)
+
+    fun createReachedNodesList() {
+        twinerPairs.forEach {
+            reachedNodesList.add(it.node1)
+            reachedNodesList.add(it.node2)
+        }
+    }
 
     // обновление графа после хода
     fun update(claim : Claim) {
         val n1 = nodes[claim.source]!!
         val n2 = nodes[claim.target]!!
+        val movePair = NodePair(n1, n2)
         if(claim.punter == twinerId) {
-            n1.state = NodeStates.TWINER
-            n2.state = NodeStates.TWINER
-            if(lastMove.source.id != claim.source ||
-                    lastMove.target.id != claim.target)
-                println("\nTWINER CONTINUE TO GROW IN ASTRAL!\n\n\n\n\n\n\n\n")
-            println("\tresult (original) : ${claim.source} -> ${claim.target}")
-            println("\tresult:  ${n1.id} -> ${n2.id}")
+            twinerPairs.add(movePair)
+
+            if(lastMove.node1.id != claim.source ||
+                    lastMove.node2.id != claim.target)
+                println("\nTWINER IN ASTRAL!\n\n\n\n\n\n\n\n")
+
+            print("\tresult: (${claim.source} -> ${claim.target})")
+            println(" ${n1.id} -> ${n2.id}")
+
+            for(log in enemyLogs) println(log)
+            enemyLogs.clear()
+
+            if(stage3IsStarted) {
+                reachedNodesList.add(n1)
+                reachedNodesList.add(n2)
+            }
+
             this.moveNum++
         }
         else {
-            n1.state = NodeStates.ENEMY
-            n2.state = NodeStates.ENEMY
-            lastEnemyNode = n2
-            neutralMines.remove(n2)
+            this.removeLink(n1, n2)
+            val enemyLog = "\nENEMY'S MOVE" +
+                "\tmove : ${claim.source} -> ${claim.target}"
+            enemyLogs.add(enemyLog)
         }
     }
 
-    // очистка вычисленных путей (сброс информации на каждом узле)
+    // reset information of each node in graph
     private fun resetDistances() {
         nodes.values.forEach { it.resetInfo() }
     }
 
-    // получение самого удаленного СВОБОДНОГО узла от переданного
-    private fun furthestNodeFrom(source : Node) : Node? {
-        resetDistances() // !!!
+    // returns true if pair of nodes is captured by Twiner
+    private fun pairCaptured(node1 : Node, node2 : Node) =
+            twinerPairs.contains(NodePair(node1, node2))
+
+    // completely removes node from graph
+    private fun removeNode(node : Node) {
+        // removing all node links
+        for(neighbour in node.links) neighbour.links.remove(node)
+
+        // removing from the main node list
+        nodes.remove(node.id)
+
+        // removing from mine lists if it is mine
+        if(nodeIsMine(node)) {
+            mines.remove(node)
+            unlinkedMines.remove(node)
+            unrealisedMines.remove(node)
+        }
+
+        // removing from reached nodes list on the third stage
+        if(stage3IsStarted) reachedNodesList.remove(node)
+    }
+
+    // completely removes link between two nodes
+    private fun removeLink(node1 : Node, node2 : Node) {
+        node1.links.remove(node2)
+        node2.links.remove(node1)
+        if(node1.links.isEmpty()) this.removeNode(node1)
+        if(node2.links.isEmpty()) this.removeNode(node2)
+    }
+
+    // returns a farthest node from source node
+    private fun getFarthestNodeFrom(source : Node) : Node {
+        resetDistances()
         val sessionNum = lastSession + 1
         val queue = LinkedList<Node>()
         var farthestNode = Node(-1)
         farthestNode.distance = Int.MIN_VALUE
 
-        // Дейкстра
+        // Dijkstra
         source.distance = 0
         var currentNode = source
         queue.add(currentNode)
         while(queue.isNotEmpty()) {
             currentNode = queue.poll()
             for(neighbour in currentNode.links) {
-                if(neighbour.updateInfo(sessionNum,
-                                currentNode.distance + 1,
-                                currentNode)) {
-                    if(neighbour.isNeutral() &&
-                            neighbour.distance > farthestNode.distance)
+                if(neighbour.updateInfo(sessionNum, currentNode.distance + 1, currentNode)) {
+                    if (neighbour.distance > farthestNode.distance)
                         farthestNode = neighbour
                     queue.add(neighbour)
                 }
             }
         }
         lastSession = sessionNum
-        if(farthestNode.id == -1) return null
         return farthestNode
     }
 
-    // определение ближайшего СВОБОДНОГО майнера для переданного узла
-    private fun nearestMineFrom(source : Node) : Node? {
+    // returns a nearest mine from a source node
+    private fun nearestUnlinkedMineFrom(source : Node) : Node? {
         resetDistances() // !!!
         val sessionNum = lastSession + 1
         val queue = LinkedList<Node>()
         var nearestMine = Node(Int.MAX_VALUE)
-        val unreviewedMines = mines
+        val unreviewedMines = linkedSetOf<Node>()
+        unlinkedMines.map { unreviewedMines.add(it) }
+        unreviewedMines.remove(source)
         nearestMine.distance = Int.MAX_VALUE
 
-        // Дейкстра
+        // Dijkstra
         source.distance = 0
         var currentNode = source
         queue.add(currentNode)
         while(queue.isNotEmpty() && unreviewedMines.isNotEmpty()) {
             currentNode = queue.poll()
             for(neighbour in currentNode.links) {
-                if(neighbour.updateInfo(sessionNum,
-                                currentNode.distance + 1,
-                                currentNode)) {
-                    if(nodeIsMiner(neighbour) && neighbour.isNeutral()) { // если это свободный майнер
-                        if(neighbour.distance < nearestMine.distance) // если он ближайший
-                            nearestMine = neighbour
-                        unreviewedMines.remove(neighbour) // удаление из списка нерассмотренных
+                if(neighbour.updateInfo(sessionNum,currentNode.distance + 1, currentNode)) {
+                    if (unreviewedMines.contains(neighbour) && neighbour.distance < nearestMine.distance) {
+                        nearestMine = neighbour
+                        unreviewedMines.remove(neighbour) // removing from unreviewed mines list
                     }
                     queue.add(neighbour)
                 }
             }
         }
         lastSession = sessionNum
-        if(nearestMine.distance == Int.MAX_VALUE) return null // если нет досягаемых майнеров
+
+        // if there's no reachable mines
+        if(nearestMine.distance == Int.MAX_VALUE) return null
+
         return nearestMine
     }
 
-    // получение узла для следующего хода
-    // первый этап - захват майнеров в порядке значимости
-    // посредством "шагов" в направлении ближайших майнеров
+    // getting node for a next move
+    // stage 1 - linking mines
     fun getNextNode() : NodePair? {
-        methodNum = 1 // маркер метода
+        println("-> stage 1")
+        methodNum = 1 // method mark
 
-        // если не осталось незахваченных майнеров
-        if(neutralMines.isEmpty()){
-            println("\t\tall neutral miners are captured")
-            println("\t\tgoing to the stage 2")
-            return getNextNode2()
-        } // переход к след. этапу
+        // if there's no more unlinked mines
+        if(unlinkedMines.isEmpty()){
+            println("\t\tall the mines are linked")
+            println("\t\t-> stage 2")
+            return getNextNode2() // go to the next stage
+        }
 
+        val mine = unlinkedMines.first() // source mine
+        println("\t\tsource mine - ${mine.id}")
         println("\t\tgetting a nearest mine")
-        val mine = neutralMines.first() // исходный майнер
-        var targetNode = nearestMineFrom(mine) // определение ближайшего майнера для текущего
+        val targetNode = nearestUnlinkedMineFrom(mine) // defining nearest mine from source
 
-        if(targetNode == null) { // если нет досягаемых майнеров
-            // определение самого дальнего узла
-            // (на основании уже вычисленных путей)
-            println("\t\tmine is isolated from other mines")
-            println("\t\tfarthest node searching")
-            var farthestNode = Node(-1) // фиктивный начальный узел
-            farthestNode.distance = -1
-            for(node in nodes.values) {
-                if(node.session == lastSession &&
-                        node.distance > farthestNode.distance)
-                    farthestNode = node
-            }
-            // если майнер оказался изолированным
-            if(farthestNode.id == -1) {
-                println("\t\tmine is isolated")
-                neutralMines.remove(mine) // удаление из списка
-                println("\trepeat $methodNum")
-                return getNextNode() // повторный вызов метода
-            }
-            // установка самого дальнего узла в качестве цели
-            targetNode = farthestNode
+        // if there's no reachable mines
+        if(targetNode == null) {
+            println("\t\tsource mine is detached from other mines")
+            unlinkedMines.remove(mine) // removing mine from unlinked mines list
+            println("\t\tsource mine has been removed from unlinked mines list")
+            println("\t\t^ repeat stage 1")
+            return getNextNode() // repeat method call
         }
 
-        // возврат следующего узла на пути к цели
-        val nextNode = nextPathNode(mine, targetNode) // след. узел
+        println("\t\tnearest mine - ${targetNode.id}")
 
-        // если следующий узел - майнер
-        // значит, захвачено сразу 2 майнера
-        if(nodeIsMiner(nextNode)) {
-            println("\t\ttarget node is mine")
-            println("\t\ttwo mines will be captured")
-            // обновление списков:
-            neutralMines.remove(nextNode) // список свободных (-)
-            capturedMines.add(nextNode) // список захваченных (+)
-            detachedMines.add(nextNode) // список обособленных (+)
-            unrealisedMines.add(nextNode) // список нереализованных (+)
+        // getting last node of path
+        println("\t\tdefining next node of path")
+        val lastPathNode = unrollPathToLastNode(mine, targetNode)
+
+        // if path unrolled to the source mine
+        if(lastPathNode == mine) {
+            println("\t\tsource mine already linked with nearest")
+            unlinkedMines.remove(mine)
+            println("\t\tsource mine has been removed from unlinked mines list")
+            println("\t\t^ repeat stage 1")
+            return getNextNode() // repeat method call
         }
 
-        // обновление списков:
-        neutralMines.remove(mine) // список свободных (-)
-        capturedMines.add(mine) // список захваченных (+)
-        detachedMines.add(mine) // список обособленных (+)
-        unrealisedMines.add(mine) // список нереализованных (+)
+        // getting next node
+        val nextNode = lastPathNode.prev!!
+        println("\t\tnext node defined - ${nextNode.id}")
 
-        return NodePair(nextNode.prev!!, nextNode)
+        if(nextNode == mine) {
+            println("\t\tmines are linked")
+            unlinkedMines.remove(mine)
+            println("\t\tsource mine has been removed from unlinked mines list")
+        }
+
+        return NodePair(lastPathNode, nextNode)
     }
 
-    // получение следующего узла пути от исходного манера к целевому
-    private fun nextPathNode(source : Node, target : Node) : Node {
+    // returns next node of path between source and target nodes
+    private fun unrollPathToLastNode(source : Node, target : Node) : Node {
         var currentNode = target
-        var prevNode = currentNode.prev
-        while(currentNode.isNeutral() &&
-                (prevNode == source || prevNode!!.isTwiners())) {
-            currentNode = prevNode
-            prevNode = prevNode.prev
+        while(currentNode.prev!! != source && pairCaptured(currentNode, currentNode.prev!!)) {
+            currentNode = currentNode.prev!!
         }
         return currentNode
     }
 
-    // получение узла для следующего хода
-    // второй этап - соединение захваченных майнеров между собой
+    // getting node for a next move
+    // stage 2 - linking mines with their farthest nodes
     private fun getNextNode2() : NodePair? {
-        this.methodNum = 2 // маркер метода
+        this.methodNum = 2 // method mark
 
-        // если не осталось обособленных майнеров (которые могут быть соединены)
-        if(detachedMines.isEmpty())  {
-            println("\t\t\tthere's no more detached mines")
-            println("\t\t\tgoing to the stage 3")
-            return getNextNode3() // переход к этапу 3
-        }
-
-        println("\t\t\tgetting a nearest mine")
-        val mine = detachedMines.first() // исходный майнер
-        val nearestMine = nearestMineFrom(mine) // определение ближайшего майнера
-
-        // если майнер изолирован от других майнеров
-        if(nearestMine == null) {
-            println("\t\t\tminer is isolated")
-            println("\t\t\tgoing to the stage 3")
-            detachedMines.remove(mine) // удаление из списка обособленных
-            return getNextNode3() // переход к этапу 3
-        }
-
-        // определение следующего узла на пути к ближайшему майнеру
-        val nextNode = nextPathNode(mine, nearestMine)
-
-        // если путь развернулся до исходного майнера,
-        // значит они уже соединены
-        if(nextNode == nearestMine) {
-            detachedMines.remove(mine) // удаление майнера из списка обособленных
-            println("\t\t\tthis mine already connected with this nearest")
-            println("\t\t\trepeat $methodNum")
-            getNextNode2() // повторный вызов метода
-        }
-
-        return NodePair(nextNode.prev!!, nextNode)
-    }
-
-    // получение узла для следующего хода
-    // третий этап - соединение майнеров с их самыми дальними точками
-    private fun getNextNode3() : NodePair? {
-        // маркер метода
-        this.methodNum = 3
-
-        // если все майнеры реализованы
+        // if all the mines are already realised
         if(unrealisedMines.isEmpty()){
-            println("\t\t\t\tall mines are realised")
-            println("\t\t\t\tgoing to the stage 4")
-            return getNextNode4() // переход к этапу 4
+            println("\t\t\tall the mines are realised")
+            println("\t\t\t-> stage 3")
+            return getNextNode3() // go to the stage 3
         }
 
-        println("\t\t\t\tgetting a farthest node")
-        val mine = unrealisedMines.first() // исходный майнер
-        val farthestNode = furthestNodeFrom(mine) // получение самого удаленного узла
+        // getting a farthest node
+        val mine = unrealisedMines.first() // source mine
+        println("\t\t\tsource mine - ${ mine.id }")
+        println("\t\t\tgetting a farthest node")
+        val farthestNode = getFarthestNodeFrom(mine)
+        println("\t\t\tfarthest node - ${ farthestNode.id }")
 
-        // если майнер изолирован
-        if(farthestNode == null) {
-            unrealisedMines.add(mine) // удаление из списка нереализованных
-            println("\t\t\t\tthis mine is isolated")
-            println("\t\t\t\trepeat $methodNum")
-            getNextNode3() // повторный вызов метода
+        // defining next node of path to farthes node
+        println("\t\t\tdefining last node of path")
+        val lastPathNode = unrollPathToLastNode(mine, farthestNode)
+
+        // if path unrolled to the source mine
+        if(lastPathNode == mine) {
+            println("\t\t\tsource mine already linked with it's farthest node")
+            unrealisedMines.remove(mine)
+            println("\t\t\tsource mine has been removed from unrealised mines list")
+            println("\t\t\t^ repeat stage 2")
+            return getNextNode2() // repeat method call
         }
 
-        // определение следующего узла на пути к самому удаленному узлу
-        val nextNode = nextPathNode(mine, farthestNode!!)
+        // getting next node
+        val nextNode = lastPathNode.prev!!
+        println("\t\tnext node defined - ${nextNode.id}")
 
-        // если путь развернулся до исходного майнера,
-        // значит майнер уже реализован
-        if(nextNode == farthestNode) {
-            unrealisedMines.remove(mine) // удаление майнера из списка обособленных
-            println("\t\t\t\tthis miner is already realised")
-            println("\t\t\t\trepeat $methodNum")
-            getNextNode3() // повторный вызов метода
+        // if nodes can be linked now
+        if(nextNode == mine) {
+            println("\t\t\tsource mine has been linked with it's farthest node")
+            unrealisedMines.remove(mine)
+            println("\t\t\tsource mine has been removed from unrealised mines list")
         }
 
-        return NodePair(nextNode.prev!!, nextNode)
+        return NodePair(lastPathNode, nextNode)
     }
 
-    // получение узла для следующего хода
-    // четвертый этап - захват всех оставшихся узлов
-    private fun getNextNode4() : NodePair? {
-        // маркер метода
-        this.methodNum = 3
+    // getting node for a next move
+    // stage 3 - capturing remained pairs
+    private fun getNextNode3() : NodePair? {
+        this.methodNum = 3 // method mark
 
-        // поиск свободного узла с захваченным соседом
-        // и возврат их пары для хода
-        println("\t\t\t\tgetting any free node to move")
-        for(node in nodes.values)
-            if(node.isNeutral())
-                for(neighbour in node.links)
-                    if(neighbour.isTwiners())
-                        return NodePair(neighbour, node)
+        // searching of uncaptured pair
+        println("\t\t\t\tgetting any free node pair")
+        if(!stage3IsStarted) {
+            createReachedNodesList()
+            stage3IsStarted = true
+        }
 
-        // если на последнем этапе не найдено ходов
-        println("\t\t\t\tthere are no more neutral nodes")
+        for(node in reachedNodesList) {
+            for(neighbour in node.links) {
+                if(!reachedNodesList.contains(neighbour)) {
+                    println("\t\t\t\tfree pair found")
+                    return NodePair(node, neighbour)
+                }
+            }
+        }
+
+        // if there are no more free pairs
+        println("\t\t\t\tthere are no more free pairs")
         return null
     }
-
-    // метод будет дописан после выявления особенностей ботов соперников
-    fun getTrick() : NodePair? = null
 }

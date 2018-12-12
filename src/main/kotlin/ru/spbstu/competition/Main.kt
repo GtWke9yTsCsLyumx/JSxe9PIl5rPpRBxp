@@ -12,7 +12,7 @@ object Arguments {
     var url: String = "kotoed.icc.spbstu.ru"
 
     @Option(name = "-p", usage = "Specify server port")
-    var port: Int = 50005
+    var port: Int = 50004
 
     fun use(args: Array<String>): Arguments =
             CmdLineParser(this).parseArgument(*args).let{ this }
@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 
     val protocol = Protocol(Arguments.url, Arguments.port)
 
-    protocol.handShake("botbotbotbot") //I wanna grow here
+    protocol.handShake("tesTTest") //I wanna grow here
     println("\twaiting for players")
     val setupData = protocol.setup()
     val graph = Graph(setupData)
@@ -55,20 +55,18 @@ fun main(args: Array<String>) {
         }
 
         println("MOVE $moveNum")
-        var movePair = graph.getTrick() // попытка насолить басурманам
-        if(movePair == null) // если все-таки придется сыграть честно
-            movePair = graph.getNextNode() // непорочное получение след. хода
+        val movePair = graph.getNextNode() // getting node pair for move
 
-        // если ход не найден
+        // if Twiner can't move
         if(movePair == null) {
             protocol.passMove()
             println("\ttwiner can't find a way to grow")
         }
         else {
-            println("\ttry: ${movePair.source.id} -> ${movePair.target.id} (${graph.getMethodNum()})" +
-                    " (neighbour=${movePair.source.links.contains(movePair.target)}" +
-                    " neutral=${movePair.target.state == NodeStates.NEUTRAL} miner=${graph.nodeIsMiner(movePair.target)})")
-            protocol.claimMove(movePair.source.id, movePair.target.id)
+            println("\ttry: ${movePair.node1.id} -> ${movePair.node2.id} (${graph.getMethodNum()})" +
+                    " (neighbour=${movePair.node1.links.contains(movePair.node2)}" +
+                    " miner=${graph.nodeIsMine(movePair.node2)})")
+            protocol.claimMove(movePair.node1.id, movePair.node2.id)
             graph.saveLastMove(movePair)
         }
     }

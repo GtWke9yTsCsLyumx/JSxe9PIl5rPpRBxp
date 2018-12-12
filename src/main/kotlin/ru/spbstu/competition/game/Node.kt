@@ -6,26 +6,16 @@ class Node(val id : Int) {
     var session = 0
     var prev : Node? = null
     var distance = 0
-    var state = NodeStates.NEUTRAL
     val links = linkedSetOf<Node>()
-
-    fun isBlocked() = this.state == NodeStates.ENEMY
-
-    fun isNeutral() = this.state == NodeStates.NEUTRAL
-
-    fun isTwiners() = this.state == NodeStates.TWINER
-
-    fun changedAtSession(session : Int) = this.session == session
 
     fun resetInfo() {
         this.prev = null
         this.distance = Int.MAX_VALUE
     }
 
-    fun updateInfo(calculationNum : Int, distance : Int, prev : Node) : Boolean {
-        if((this.session != calculationNum || this.distance > distance)
-                && !this.isBlocked()) {
-            this.session = calculationNum
+    fun updateInfo(currentSession : Int, distance : Int, prev : Node) : Boolean {
+        if((this.session != currentSession || this.distance > distance)) {
+            this.session = currentSession
             this.distance = distance
             this.prev = prev
             return true
@@ -34,4 +24,11 @@ class Node(val id : Int) {
     }
 }
 
-data class NodePair(val source : Node, val target : Node)
+data class NodePair(val node1 : Node, val node2 : Node) {
+
+    override fun equals(other: Any?) = other is NodePair &&
+            ( other.node1 == node1 && other.node2 == node2 ||
+              other.node2 == node1 && other.node1 == node2 )
+
+    override fun hashCode() = node1.id.hashCode() xor node2.id.hashCode()
+}
