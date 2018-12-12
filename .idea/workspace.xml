@@ -5,12 +5,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Node.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/Arguments.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/Arguments.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/MainKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/MainKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/Graph.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/Graph.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/Node.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/NodePair.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ru/spbstu/competition/game/NodePair.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -55,12 +52,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="kt" value="27521" />
+          <entry key="kt" value="29967" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Kotlin" value="27521" />
+          <entry key="Kotlin" value="29967" />
         </counts>
       </usages-collector>
     </session>
@@ -70,8 +67,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1">
-              <caret line="14" column="25" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+            <state relative-caret-position="180">
+              <caret line="27" column="30" selection-start-line="27" selection-start-column="30" selection-end-line="27" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -79,8 +76,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="304" column="9" lean-forward="true" selection-start-line="304" selection-start-column="9" selection-end-line="304" selection-end-column="9" />
+            <state relative-caret-position="194">
+              <caret line="276" column="22" lean-forward="true" selection-start-line="276" selection-start-column="22" selection-end-line="276" selection-end-column="22" />
               <folding>
                 <element signature="e#36#192#0" expanded="true" />
               </folding>
@@ -101,21 +98,9 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>detauched</find>
-      <find>lastMove</find>
-      <find>isolated</find>
-      <find>unreviewedMines</find>
-      <find>repeat</find>
-      <find>all miners are captured</find>
-      <find>captured</find>
-      <find>miner</find>
-      <find>all mine are captured</find>
-      <find>show</find>
-      <find>removeLink</find>
       <find>unlin</find>
       <find>getting a nearest mine</find>
       <find>has been removed</find>
-      <find>unlinkedMines</find>
       <find>println</find>
       <find>!!!</find>
       <find>unl</find>
@@ -131,6 +116,18 @@
       <find>PathNode</find>
       <find>nearest mine -</find>
       <find>next node defined</find>
+      <find>ENEMY'S</find>
+      <find>unlinkedMines</find>
+      <find>reachedNodes</find>
+      <find>mines are linked</find>
+      <find>getfarthest</find>
+      <find>defining next node of path from source</find>
+      <find>defining next node of path from`</find>
+      <find>try</find>
+      <find>pairCo</find>
+      <find>farthest node -</find>
+      <find>WHAT THE FUCK?!?!?!?!!</find>
+      <find>getting a farthest node</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -264,7 +261,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1544566082305" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1544603503370" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
@@ -324,6 +321,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="30" width="1366" height="738" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12575758" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -333,7 +331,7 @@
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49848485" visible="true" weight="1.0" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49848485" weight="1.0" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -401,8 +399,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/game/Graph.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="304" column="9" lean-forward="true" selection-start-line="304" selection-start-column="9" selection-end-line="304" selection-end-column="9" />
+        <state relative-caret-position="194">
+          <caret line="276" column="22" lean-forward="true" selection-start-line="276" selection-start-column="22" selection-end-line="276" selection-end-column="22" />
           <folding>
             <element signature="e#36#192#0" expanded="true" />
           </folding>
@@ -411,8 +409,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/ru/spbstu/competition/Main.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1">
-          <caret line="14" column="25" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+        <state relative-caret-position="180">
+          <caret line="27" column="30" selection-start-line="27" selection-start-column="30" selection-end-line="27" selection-end-column="30" />
         </state>
       </provider>
     </entry>

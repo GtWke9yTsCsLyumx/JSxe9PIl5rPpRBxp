@@ -12,7 +12,7 @@ object Arguments {
     var url: String = "kotoed.icc.spbstu.ru"
 
     @Option(name = "-p", usage = "Specify server port")
-    var port: Int = 50004
+    var port: Int = 50006
 
     fun use(args: Array<String>): Arguments =
             CmdLineParser(this).parseArgument(*args).let{ this }
@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 
     val protocol = Protocol(Arguments.url, Arguments.port)
 
-    protocol.handShake("tesTTest") //I wanna grow here
+    protocol.handShake("Twiner") //I wanna grow here
     println("\twaiting for players")
     val setupData = protocol.setup()
     val graph = Graph(setupData)
@@ -65,7 +65,8 @@ fun main(args: Array<String>) {
         else {
             println("\ttry: ${movePair.node1.id} -> ${movePair.node2.id} (${graph.getMethodNum()})" +
                     " (neighbour=${movePair.node1.links.contains(movePair.node2)}" +
-                    " miner=${graph.nodeIsMine(movePair.node2)})")
+                    " miner=${graph.nodeIsMine(movePair.node2)}" +
+                    " pair=${graph.pairCaptured(movePair.node1, movePair.node2)})")
             protocol.claimMove(movePair.node1.id, movePair.node2.id)
             graph.saveLastMove(movePair)
         }

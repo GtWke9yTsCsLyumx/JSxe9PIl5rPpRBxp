@@ -43,8 +43,6 @@ class Graph(setup : Setup) {
             unrealisedMines.add(nodes[mineId]!!)
         }
 
-        println("*** ${unlinkedMines === mines}, ${unrealisedMines === mines} ***")
-
         println("\t\tgraph building completed!")
         println("\t\t\tnodes: ${nodes.size}\n\t\t\tmines: ${mines.size}")
         print("\t\t\tmine ids : [")
@@ -82,7 +80,9 @@ class Graph(setup : Setup) {
             print("\tresult: (${claim.source} -> ${claim.target})")
             println(" ${n1.id} -> ${n2.id}")
 
+            println()
             for(log in enemyLogs) println(log)
+            println()
             enemyLogs.clear()
 
             if(stage3IsStarted) {
@@ -94,8 +94,7 @@ class Graph(setup : Setup) {
         }
         else {
             this.removeLink(n1, n2)
-            val enemyLog = "\nENEMY'S MOVE" +
-                "\tmove : ${claim.source} -> ${claim.target}"
+            val enemyLog = "OPPONENT'S MOVE: ${claim.source} -> ${claim.target} (player ${claim.punter})"
             enemyLogs.add(enemyLog)
         }
     }
@@ -106,7 +105,7 @@ class Graph(setup : Setup) {
     }
 
     // returns true if pair of nodes is captured by Twiner
-    private fun pairCaptured(node1 : Node, node2 : Node) =
+    fun pairCaptured(node1 : Node, node2 : Node) =
             twinerPairs.contains(NodePair(node1, node2))
 
     // completely removes node from graph
@@ -163,13 +162,13 @@ class Graph(setup : Setup) {
     }
 
     // returns a nearest mine from a source node
-    private fun nearestUnlinkedMineFrom(source : Node) : Node? {
+    private fun nearestMineFrom(source : Node) : Node? {
         resetDistances() // !!!
         val sessionNum = lastSession + 1
         val queue = LinkedList<Node>()
         var nearestMine = Node(Int.MAX_VALUE)
         val unreviewedMines = linkedSetOf<Node>()
-        unlinkedMines.map { unreviewedMines.add(it) }
+        mines.map { unreviewedMines.add(it) }
         unreviewedMines.remove(source)
         nearestMine.distance = Int.MAX_VALUE
 
@@ -213,7 +212,7 @@ class Graph(setup : Setup) {
         val mine = unlinkedMines.first() // source mine
         println("\t\tsource mine - ${mine.id}")
         println("\t\tgetting a nearest mine")
-        val targetNode = nearestUnlinkedMineFrom(mine) // defining nearest mine from source
+        val targetNode = nearestMineFrom(mine) // defining nearest mine from source
 
         // if there's no reachable mines
         if(targetNode == null) {
@@ -228,7 +227,7 @@ class Graph(setup : Setup) {
 
         // getting last node of path
         println("\t\tdefining next node of path")
-        val lastPathNode = unrollPathToLastNode(mine, targetNode)
+        val lastPathNode = unrollPath(mine, targetNode)
 
         // if path unrolled to the source mine
         if(lastPathNode == mine) {
@@ -252,13 +251,30 @@ class Graph(setup : Setup) {
         return NodePair(lastPathNode, nextNode)
     }
 
-    // returns next node of path between source and target nodes
-    private fun unrollPathToLastNode(source : Node, target : Node) : Node {
+    // returns next node of path from target to source
+    private fun unrollPath(source : Node, target : Node) : Node {
         var currentNode = target
-        while(currentNode.prev!! != source && pairCaptured(currentNode, currentNode.prev!!)) {
+        while(currentNode != source && pairCaptured(currentNode, currentNode.prev!!)) {
             currentNode = currentNode.prev!!
         }
         return currentNode
+    }
+
+    // returns next node of path from source to target
+    private fun unrollReversedPath(source : Node, target : Node) : Node {
+        var currentNode = target
+        var path = mutableListOf<Node>()
+
+        while(currentNode != source) {
+            path.add(currentNode)
+            currentNode = currentNode.prev!!
+        }
+        path.add(source)
+        path = path.asReversed()
+
+        var i = 1
+        while(i < path.size - 1 && pairCaptured(path[i - 1], path[i])) i++
+        return path[i]
     }
 
     // getting node for a next move
@@ -280,31 +296,33 @@ class Graph(setup : Setup) {
         val farthestNode = getFarthestNodeFrom(mine)
         println("\t\t\tfarthest node - ${ farthestNode.id }")
 
-        // defining next node of path to farthes node
-        println("\t\t\tdefining last node of path")
-        val lastPathNode = unrollPathToLastNode(mine, farthestNode)
-
-        // if path unrolled to the source mine
-        if(lastPathNode == mine) {
-            println("\t\t\tsource mine already linked with it's farthest node")
+        if(farthestNode == mine) {
+            println("\t\t\tsource mine isolated")
             unrealisedMines.remove(mine)
             println("\t\t\tsource mine has been removed from unrealised mines list")
             println("\t\t\t^ repeat stage 2")
             return getNextNode2() // repeat method call
         }
 
-        // getting next node
-        val nextNode = lastPathNode.prev!!
-        println("\t\tnext node defined - ${nextNode.id}")
+        // defining next node of path to farthes node
+        println("\t\t\tdefining next node of path from source")
+        val nextNode = unrollReversedPath(mine, farthestNode)
 
-        // if nodes can be linked now
-        if(nextNode == mine) {
-            println("\t\t\tsource mine has been linked with it's farthest node")
+        // if this move will linked miner with it's farthest node
+        if(nextNode == farthestNode) {
+            if(pairCaptured(nextNode, nextNode.prev!!)) {
+                println("\t\t\tthe mine is already linked with farthest node")
+                unrealisedMines.remove(mine)
+                println("\t\t\tsource mine has been removed from unrealised mines list")
+                println("\t\t\t^ repeat stage 2")
+                return getNextNode2() // repeat method call
+            }
+            println("\t\t\tsource mine has been linked with farthest node")
             unrealisedMines.remove(mine)
             println("\t\t\tsource mine has been removed from unrealised mines list")
         }
 
-        return NodePair(lastPathNode, nextNode)
+        return NodePair(nextNode.prev!!, nextNode)
     }
 
     // getting node for a next move
@@ -312,24 +330,26 @@ class Graph(setup : Setup) {
     private fun getNextNode3() : NodePair? {
         this.methodNum = 3 // method mark
 
-        // searching of uncaptured pair
-        println("\t\t\t\tgetting any free node pair")
+        // creating reached nodes list if it needed
         if(!stage3IsStarted) {
+            println("\t\t\t\tcreating reached nodes list")
             createReachedNodesList()
             stage3IsStarted = true
         }
 
+        // searching of unreached node
+        println("\t\t\t\tgetting unreached node")
         for(node in reachedNodesList) {
             for(neighbour in node.links) {
                 if(!reachedNodesList.contains(neighbour)) {
-                    println("\t\t\t\tfree pair found")
+                    println("\t\t\t\tunreached node - ${node.id}")
                     return NodePair(node, neighbour)
                 }
             }
         }
 
-        // if there are no more free pairs
-        println("\t\t\t\tthere are no more free pairs")
+        // if Twiner can't find node pair for move
+        println("\t\t\t\tthere are no more reachable nodes")
         return null
     }
 }
